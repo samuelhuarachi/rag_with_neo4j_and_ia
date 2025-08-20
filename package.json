@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +16,16 @@
   "bugs": {
     "url": "https://github.com/samuelhuarachi/rag_with_neo4j_and_ia/issues"
   },
-  "homepage": "https://github.com/samuelhuarachi/rag_with_neo4j_and_ia#readme"
+  "homepage": "https://github.com/samuelhuarachi/rag_with_neo4j_and_ia#readme",
+  "dependencies": {
+    "@langchain/community": "^0.3.28",
+    "@langchain/core": "^0.3.37",
+    "@langchain/google-genai": "^0.1.8",
+    "@langchain/ollama": "^0.1.5",
+    "@langchain/openai": "^0.4.2",
+    "neo4j-driver": "^5.28.0"
+  },
+  "engines": {
+    "node": "v24.5.0"
+  }
 }
