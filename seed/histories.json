@@ -1,0 +1,21 @@
+[
+  {
+    "id": "b13507cb-e273-481e-9cdd-8cbbc08eb999",
+    "userId": "samuel",
+    "topicId": "3b9153f1-d505-4921-85f8-0b26167c4501",
+    "name": "Historia de terror 1",
+    "content": "A noite estava silenciosa quando Pedro decidiu atravessar o velho cemitério para voltar para casa. \n        Entre as lápides quebradas e árvores retorcidas, uma névoa densa começou a surgir, cobrindo cada passo que ele dava. \n        De repente, ouviu sussurros indistintos ao seu redor, como se centenas de vozes estivessem repetindo seu nome, mas não havia ninguém à vista.\n\nQuando ele acelerou o passo, sentiu um frio cortante no pescoço, como se alguém tivesse passado a mão por ali. \nAo se virar, não viu nada, mas seus olhos encontraram uma sombra parada atrás de uma lápide, imóvel, observando cada movimento. \nPedro correu, mas a sombra parecia seguir cada passo, e o sussurro transformou-se em risada sombria, ecoando na escuridão, \nfazendo o coração dele quase parar.",
+    "classfification": "positive",
+    "created_at": "2025-08-21T14:41:32.031Z"
+  },
+  {
+    "id": "433ad34d-be6c-4eba-97be-68dba0c9e870",
+    "userId": "samuel",
+    "topicId": "3b9153f1-d505-4921-85f8-0b26167c4501",
+    "name": "Historia de terror 2",
+    "content": "Mariana sempre evitava passar pela estrada abandonada perto da floresta, mas naquela noite não teve escolha. \n        O vento uivava entre as árvores secas, e os galhos batiam no carro como dedos esqueléticos. \n        No reflexo do retrovisor, algo parecia se mexer nos arbustos, mas cada vez que olhava, não havia nada.\n\nQuando estacionou para atender uma ligação, ouviu passos atrás dela. Virou-se devagar e viu uma figura encapuzada, \nimóvel, mas sentiu o olhar penetrante que parecia atravessar a pele. O telefone caiu de sua mão e, ao se abaixar para pegá-lo, \npercebeu que a figura estava agora dentro do carro, sentada no banco de trás, e um sussurro gélido disse: “Você não deveria estar aqui.”",
+    "classfification": "negative",
+    "created_at": "2025-08-21T14:41:32.031Z"
+  }
+]
+

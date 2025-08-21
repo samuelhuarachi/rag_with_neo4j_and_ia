@@ -25,6 +25,9 @@
     "@langchain/openai": "^0.4.2",
     "neo4j-driver": "^5.28.0"
   },
+  "devDependencies": {
+    "@faker-js/faker": "^9.4.0"
+  },
   "engines": {
     "node": "v24.5.0"
   }

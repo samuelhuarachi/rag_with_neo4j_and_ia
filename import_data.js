@@ -21,28 +21,26 @@ const ollamaEmbeddings = new OllamaEmbeddings({
     baseURL: process.env.OPENAI_BASE_URL,
 });
 
+
 const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddings, config);
 
+const files = fs.readdirSync(dir);
+for (const file of files) {
+  const filePath = path.join(dir, file);
+  const content = fs.readFileSync(filePath, "utf8");
 
-// const files = fs.readdirSync(dir);
-
-// for (const file of files) {
-//   const filePath = path.join(dir, file);
-//   const content = fs.readFileSync(filePath, "utf8");
-
-//   const doc = { pageContent: content, metadata: {} };
-//   console.log(doc);
-//   await addDocumentIfNotExists(doc);
-// }
+  const doc = { pageContent: content, metadata: {} };
+  console.log(doc);
+  await addDocumentIfNotExists(doc);
+}
 
 
-await makeAQuestion("melhor casa?");
+// await makeAQuestion("melhor casa?");
 await neo4jVectorIndex.close();
 
 
 async function makeAQuestion(question) {
-    let results = await neo4jVectorIndex.similaritySearchWithScore(question, 30);
-
+    let results = await neo4jVectorIndex.similaritySearchWithScore(question, 5);
     console.log("🔍 Search Results:", question, results.at(0)?.at(1), results.at(0)?.at(0));
 }
 

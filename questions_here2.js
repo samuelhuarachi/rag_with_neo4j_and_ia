@@ -1,5 +1,6 @@
-// https://ollama.com/sushruth/solar-uncensored
-
+import neo4j from "neo4j-driver";
+import { readFile } from "node:fs/promises";
+import { faker } from "@faker-js/faker";
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import "dotenv/config";
@@ -12,10 +13,16 @@ const config = {
     indexName: "javascript_index",
     keywordIndexName: "javascript_keywords",
     searchType: "vector",
-    nodeLabel: "Chunk",
+    nodeLabel: "History",
     textNodeProperty: "text",
     embeddingNodeProperty: "embedding",
 };
+
+
+const ollamaEmbeddings = new OllamaEmbeddings({
+    model: "nomic-embed-text",
+    baseURL: process.env.OLLAMA_BASE_URL,
+});
 
 const model = new ChatOllama({
     temperature: 0,
@@ -24,16 +31,11 @@ const model = new ChatOllama({
     baseURL: process.env.OLLAMA_BASE_URL,
 });
 
-const ollamaEmbeddings = new OllamaEmbeddings({
-    model: "nomic-embed-text",
-    baseURL: process.env.OLLAMA_BASE_URL,
-});
 
 const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddings, config);
 
-
 await Promise.all([
-    "a noite estava silenciosa",
+    "Mariana sempre evitava passar pela estrada abandonada perto da floresta, mas naquela noite não teve escolha",
 ].map(async question => {
     const response = await answerQuestion(question);
 
@@ -43,7 +45,12 @@ await Promise.all([
 
 
 async function answerQuestion(question) {
-    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 3);
+
+    // neo4jVectorIndex.similaritySearch("")
+    console.log(question);
+    const results = await neo4jVectorIndex.similaritySearch(question, 1);
+    console.log(results);
+
     const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
 
     if (relevantChunks.length === 0) {
