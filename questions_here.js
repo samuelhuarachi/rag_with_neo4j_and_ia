@@ -1,3 +1,5 @@
+// https://ollama.com/sushruth/solar-uncensored
+
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import "dotenv/config";
@@ -31,7 +33,7 @@ const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddin
 
 
 await Promise.all([
-    "A amanda trabalha de sabado?",
+    "qusetion here?",
 ].map(async question => {
     const response = await answerQuestion(question);
 
@@ -41,7 +43,7 @@ await Promise.all([
 
 
 async function answerQuestion(question) {
-    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 100);
+    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 3);
     const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
 
     if (relevantChunks.length === 0) {
@@ -59,7 +61,7 @@ async function answerQuestion(question) {
 
         Question: ${question}
 
-        Provide a direct and informative response:
+        Provide a direct and informative response in portuguese:
     `;
 
     // 4️⃣ Generate Response Using AI Model

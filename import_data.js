@@ -1,7 +1,11 @@
 import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
+import fs from "fs"
+import path from "path"
 import "dotenv/config";
+
+const dir = "./documents_extrated"; 
 
 const config = {
     url: 'bolt://localhost:7687',
@@ -19,24 +23,25 @@ const ollamaEmbeddings = new OllamaEmbeddings({
 
 const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddings, config);
 
-const documents = [
-    { pageContent: "O samuel gosta de campinas.", metadata: {} },
-    { pageContent: "A amanda só trabalha de segunda a sexta feira.", metadata: {} },
-    { pageContent: "O James está atuando em um filme. E não gosta de campinas.", metadata: {} },
-    { pageContent: "O Erick está fazendo posts para o instagram.", metadata: {} },
-];
 
-for (const doc of documents) {
-    await addDocumentIfNotExists(doc);
-}
+// const files = fs.readdirSync(dir);
+
+// for (const file of files) {
+//   const filePath = path.join(dir, file);
+//   const content = fs.readFileSync(filePath, "utf8");
+
+//   const doc = { pageContent: content, metadata: {} };
+//   console.log(doc);
+//   await addDocumentIfNotExists(doc);
+// }
 
 
-await makeAQuestion("Quem trabalha de segunda a sexta feira?");
+await makeAQuestion("melhor casa?");
 await neo4jVectorIndex.close();
 
 
 async function makeAQuestion(question) {
-    let results = await neo4jVectorIndex.similaritySearchWithScore(question, 1);
+    let results = await neo4jVectorIndex.similaritySearchWithScore(question, 30);
 
     console.log("🔍 Search Results:", question, results.at(0)?.at(1), results.at(0)?.at(0));
 }
