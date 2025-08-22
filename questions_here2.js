@@ -5,15 +5,15 @@ import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import "dotenv/config";
 
+
 const config = {
     url: process.env.NEO4J_URI,
     username: process.env.NEO4J_USER,
     password: process.env.NEO4J_PASSWORD,
     textNodeProperties: ["text"],
-    indexName: "javascript_index",
-    keywordIndexName: "javascript_keywords",
+    indexName: "history_index",
+    keywordIndexName: "history_keywords",
     searchType: "vector",
-    nodeLabel: "History",
     textNodeProperty: "text",
     embeddingNodeProperty: "embedding",
 };
@@ -32,10 +32,12 @@ const model = new ChatOllama({
 });
 
 
-const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddings, config);
+
+// const neo4jVectorIndex = await Neo4jVectorStore.fromExistingGraph(ollamaEmbeddings, config);
+const neo4jVectorIndex = await Neo4jVectorStore.initialize(ollamaEmbeddings, config);
 
 await Promise.all([
-    "Mariana sempre evitava passar pela estrada abandonada perto da floresta, mas naquela noite não teve escolha",
+    "Mariana passava na estrada abandonada?",
 ].map(async question => {
     const response = await answerQuestion(question);
 
@@ -46,11 +48,7 @@ await Promise.all([
 
 async function answerQuestion(question) {
 
-    // neo4jVectorIndex.similaritySearch("")
-    console.log(question);
-    const results = await neo4jVectorIndex.similaritySearch(question, 1);
-    console.log(results);
-
+    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 3);
     const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
 
     if (relevantChunks.length === 0) {

@@ -39,54 +39,55 @@ for (const data of histories) {
 
 
 
-await session.run(
-    `UNWIND $batch AS row
-    MERGE (s:User {id: row.id})
-    ON CREATE SET s.nick = row.nick, s.created_at = row.created_at`,
-    { batch: users }
-);
-console.log("✅ Users Inserted!");
+// await session.run(
+//     `UNWIND $batch AS row
+//     MERGE (s:User {id: row.id})
+//     ON CREATE SET s.nick = row.nick, s.created_at = row.created_at`,
+//     { batch: users }
+// );
+// console.log("✅ Users Inserted!");
 
-await session.run(
-    `UNWIND $batch AS row
-    MERGE (s:State {id: row.id})
-    ON CREATE SET s.name = row.name`,
-    { batch: states }
-);
-console.log("✅ States Inserted!");
+// await session.run(
+//     `UNWIND $batch AS row
+//     MERGE (s:State {id: row.id})
+//     ON CREATE SET s.name = row.name`,
+//     { batch: states }
+// );
+// console.log("✅ States Inserted!");
 
-await session.run(
-        `UNWIND $batch AS row
-        MATCH (s:State {id: row.stateId})
-        MERGE (c:City {id: row.id})
-        ON CREATE SET c.name = row.name
-        MERGE (c)-[:PART_OF]->(s)`,
-        { batch: cities }
-    );
-console.log("✅ Cities Inserted!");
+// await session.run(
+//         `UNWIND $batch AS row
+//         MATCH (s:State {id: row.stateId})
+//         MERGE (c:City {id: row.id})
+//         ON CREATE SET c.name = row.name
+//         MERGE (c)-[:PART_OF]->(s)`,
+//         { batch: cities }
+//     );
+// console.log("✅ Cities Inserted!");
 
 
-await session.run(
-        `UNWIND $batch AS row
-        MATCH (c:City {id: row.cityId})
-        MERGE (t:Topic {id: row.id})
-        ON CREATE SET t.name = row.name
-        MERGE (t)-[:LOCATED_IN]->(c)`,
-        { batch: topics }
-    );
-console.log("✅ Topics Inserted!");
+// await session.run(
+//         `UNWIND $batch AS row
+//         MATCH (c:City {id: row.cityId})
+//         MERGE (t:Topic {id: row.id})
+//         ON CREATE SET t.name = row.name
+//         MERGE (t)-[:LOCATED_IN]->(c)`,
+//         { batch: topics }
+//     );
+// console.log("✅ Topics Inserted!");
 
-await session.run(
-        `UNWIND $batch AS row
-        MATCH (t:Topic {id: row.topicId}), (u:User {id: row.userId})
-        MERGE (h:History {id: row.id})
-        ON CREATE SET h.name = row.name, h.content = row.content, h.classfification = row.classfification, h.created_at = row.created_at, h.embedding = row.embedding
-        MERGE (h)-[:BELONGS_TO]->(t)
-        MERGE (u)-[:POSTED]->(h)`,
-        { batch: histories }
-    );
-console.log("✅ Histories Inserted!");
 
+
+// pode executar essa consulta direto no neo4j, para fazer o relacionamentos
+// nao se funciona direto pelo codigo, mas no neo4j foi ok
+// MATCH (h:History)
+//   WITH h, h.userId AS uid, h.topicId AS tid
+//   MATCH (u:User {id: uid})
+//   MATCH (t:Topic {id: tid})
+//   MERGE (u)-[:POSTED]->(h)
+//   MERGE (h)-[:BELONGS_TO]->(t)
+//   RETURN h.id AS historyId, uid, tid
+// console.log("✅ Histories Template defined!");
 
 
 
