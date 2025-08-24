@@ -37,7 +37,7 @@ const model = new ChatOllama({
 const neo4jVectorIndex = await Neo4jVectorStore.initialize(ollamaEmbeddings, config);
 
 await Promise.all([
-    "Mariana passava na estrada abandonada?",
+    "Tem algo a dizer sobre a amanda?",
 ].map(async question => {
     const response = await answerQuestion(question);
 
@@ -48,7 +48,17 @@ await Promise.all([
 
 async function answerQuestion(question) {
 
-    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 3);
+
+    // const filter = { a: { $eq: 1 } };
+    /*
+    const filter = {
+        date: {
+            $gte: "2024-01-01",
+            $lte: "2024-12-31"
+        }
+    };
+    */
+    const results = await neo4jVectorIndex.similaritySearchWithScore(question, 10);
     const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
 
     if (relevantChunks.length === 0) {
@@ -66,10 +76,9 @@ async function answerQuestion(question) {
 
         Question: ${question}
 
-        Provide a direct and informative response in portuguese:
+        Provide a details and informative response in portuguese. Use nicks, and dates, to reference your answers:
     `;
 
-    // 4️⃣ Generate Response Using AI Model
     const response = await model.invoke(prompt);
     return response;
 }

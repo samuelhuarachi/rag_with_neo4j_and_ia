@@ -5,22 +5,26 @@ import { readFile } from "node:fs/promises";
 import "dotenv/config";
 
 
+
 // SHOW INDEXES;
 // DROP INDEX history_index;
 
 
-// CALL db.index.vector.createNodeIndex(
-//   'history_index',
-//   'History',
-//   'embedding',
-//   768,   // dimensão do vetor
-//   'cosine'
-// );
+/*
+CALL db.index.vector.createNodeIndex(
+  'history_index',
+  'History',
+  'embedding',
+  4096,   
+  'cosine'
+);
+
+// dimensão do vetor (4096 ou 768)
+
+*/
+
 
 // CREATE FULLTEXT INDEX history_keywords FOR (h:History) ON EACH [h.text];
-
-
-
 
 
 const config = {
@@ -30,7 +34,7 @@ const config = {
     textNodeProperties: ["text"],
     nodeLabel: "History",
     indexName: "history_index",
-    keywordIndexName: "history_keyword",
+    keywordIndexName: "history_keyword"
 };
 
 const ollamaEmbeddings = new OllamaEmbeddings({
@@ -44,6 +48,9 @@ const neo4jVectorStore = await Neo4jVectorStore.initialize(ollamaEmbeddings, con
 
 const histories = JSON.parse(await readFile("./seed/histories.json"));
 for (const history of histories) {
+
+    console.log("tamanho", history.content.length);
+
     const doc = { pageContent: history.content, metadata: { 
         userId: history.userId,
         topicId: history.topicId,
@@ -52,26 +59,33 @@ for (const history of histories) {
         created_at: history.created_at
     } };
 
+
     await addDocumentIfNotExists(doc);
 }
 
-
-
 await neo4jVectorStore.close();
-
-
 async function addDocumentIfNotExists(doc) {
-    const searchResults = await neo4jVectorStore.similaritySearchWithScore(doc.pageContent, 1);
-    const score = searchResults.at(0)?.at(1)
-    const item = searchResults.at(0)?.at(0)
-    //console.log("🔍 Search Results:", searchResults, score);
-    console.log("🔍 Score:",  score);
 
-    if (score > 0.9 && item?.pageContent === '\ntext: '.concat(doc.pageContent)) {
-        console.log(`🚫 Skipping duplicate: "${doc.metadata.title}"`);
-    } else {
-        console.log(`✅ Adding new document: "${doc.metadata.title}"`);
-        await neo4jVectorStore.addDocuments([doc]);
+    try {
+        console.log("buscando");
+        const searchResults = await neo4jVectorStore.similaritySearchWithScore(doc.pageContent, 1);
+        const score = searchResults.at(0)?.at(1)
+        const item = searchResults.at(0)?.at(0)
+        console.log("🔍 Score:",  score);
+
+        if (score === 1) {
+            console.log(`🚫 Skipping duplicate: "${doc.metadata.title}"`);
+            return;
+        }
+
+        if (score > 0.9 && item?.pageContent === '\ntext: '.concat(doc.pageContent)) {
+            console.log(`🚫 Skipping duplicate: "${doc.metadata.title}"`);
+        } else {
+            console.log(`✅ Adding new document: "${doc.metadata.title}"`);
+            await neo4jVectorStore.addDocuments([doc]);
+        }
+    } catch (error) {
+        console.log(error);
     }
 }
 

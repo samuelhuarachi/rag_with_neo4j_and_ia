@@ -4,6 +4,16 @@ import { faker } from "@faker-js/faker";
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import "dotenv/config";
 
+/*
+
+excluir tudo:
+MATCH (n)
+DETACH DELETE n;
+
+mostrar tudo:
+MATCH (n) RETURN n LIMIT 100;
+
+*/
 
 const driver = neo4j.driver(
     process.env.NEO4J_URI,
@@ -23,10 +33,10 @@ const topics = JSON.parse(await readFile("./seed/topics.json"));
 const cities = JSON.parse(await readFile("./seed/cities.json"));
 const states = JSON.parse(await readFile("./seed/states.json"));
 
-for (const data of histories) {
-    data.content = data.content.replace(/(\r\n|\n|\r)/gm, "").replace(/ +(?= )/g,'');
-    data.embedding = await ollamaEmbeddings.embedQuery(data.content);
-}
+// for (const data of histories) {
+//     data.content = data.content.replace(/(\r\n|\n|\r)/gm, "").replace(/ +(?= )/g,'');
+//     data.embedding = await ollamaEmbeddings.embedQuery(data.content);
+// }
 
 // acho que isso aqui, eu consigo editar alguem atributo por id
 // await session.run(

@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  mongo-db:
+    image: mongo:8.0
+    container_name: app-mongo8
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: samuel_gomes
+        MONGO_INITDB_ROOT_PASSWORD: password029ld!
+    ports:
+    - "27032:27017"
+    volumes:
+    - .docker/dbdata8:/data/db
+    - .docker/mongodump:/home
   neo4j:
     image: neo4j:5.14.0-community
     # image: neo4j:5.21-enterprise

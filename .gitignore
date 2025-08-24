@@ -3,5 +3,4 @@ node_modules
 import
 documents_extrated
 seed_hidden
-.env
-seed/seed_histories.json
+.docker
