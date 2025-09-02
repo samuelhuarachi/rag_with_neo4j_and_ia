@@ -15,12 +15,16 @@ CALL db.index.vector.createNodeIndex(
   'history_index',
   'History',
   'embedding',
-  4096,   
+  768,   
   'cosine'
 );
 
 // dimensão do vetor (4096 ou 768)
 
+// nao testei a maneira a baixo de fazer index, so a de cima
+CREATE VECTOR INDEX history_index 
+FOR (d:History) ON (d.embedding)
+OPTIONS { indexConfig: { `vector.dimensions`: 768, `vector.similarity_function`: 'cosine' } };
 */
 
 

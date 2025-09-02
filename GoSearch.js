@@ -1,5 +1,8 @@
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
+import {similaritySearchWithFilter} from "./similaritySearchWithFilter.js"
+import neo4j from "neo4j-driver";
+
 import "dotenv/config";
 
 export default class GoSearch {
@@ -19,7 +22,6 @@ export default class GoSearch {
     });
 
     #neo4jVectorIndex;
-    
 
     constructor(neoj4_index = "history_index", neo4j_keywords = "history_keywords") {
         this.#config = {
@@ -29,10 +31,13 @@ export default class GoSearch {
             textNodeProperties: ["text"],
             indexName: neoj4_index,
             keywordIndexName: neo4j_keywords,
+            // searchType: "vector",
             searchType: "vector",
             textNodeProperty: "text",
             embeddingNodeProperty: "embedding",
         };
+
+        
     }
 
     async init() {
@@ -53,9 +58,22 @@ export default class GoSearch {
             }
         };
         */
-        const results = await this.#neo4jVectorIndex.similaritySearchWithScore(question, 10);
-        const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
 
+        const question_embedding = await this.#ollamaEmbeddings.embedQuery(question);
+
+        const driver = neo4j.driver(
+            "neo4j://localhost:7687",
+            neo4j.auth.basic(process.env.NEO4J_USER, process.env.NEO4J_PASSWORD)
+        );
+
+        const results = await similaritySearchWithFilter(driver, "history_index", {
+            k: 5,
+            embedding: question_embedding,
+            filter: { userId: "[user nick]" },
+        });
+
+
+        const relevantChunks = results.map(result => result.text.replaceAll('text: ', ''));
         if (relevantChunks.length === 0) return {content: "Sorry, I couldn't find enough information to answer."};
         
 
@@ -78,5 +96,6 @@ export default class GoSearch {
 
     async close() {
         await this.#neo4jVectorIndex.close();
+
     }
 }

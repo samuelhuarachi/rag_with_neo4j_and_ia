@@ -30,7 +30,6 @@ for (const file of files) {
   const content = fs.readFileSync(filePath, "utf8");
 
   const doc = { pageContent: content, metadata: {} };
-  console.log(doc);
   await addDocumentIfNotExists(doc);
 }
 
