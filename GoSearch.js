@@ -1,6 +1,7 @@
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
-import {similaritySearchWithFilter} from "./similaritySearchWithFilter.js"
+// import {similaritySearchWithFilter} from "./similaritySearchWithFilter_ v1.js"
+import { similaritySearchWithFilter } from "./similaritySearchWithFilter.js"
 import neo4j from "neo4j-driver";
 
 import "dotenv/config";
@@ -69,7 +70,8 @@ export default class GoSearch {
         const results = await similaritySearchWithFilter(driver, "history_index", {
             k: 5,
             embedding: question_embedding,
-            filter: { userId: "[user nick]" },
+            filter: { userId: "" },
+            rangeFilter: { created_at: { from: "2022-09-16", to: "2022-09-18T23:59:59" } }
         });
 
 
