@@ -27,14 +27,20 @@ mongoose.connect(MONGO_URI)
     app.post("/go_search", async (req, res) => {
         const { pergunta } = req.body;
 
+        console.log(req.body);
+
         // Posta a mensagem no SQS, para processar uma de cada vez
+
         
         const goSearch = new GoSearch();
         await goSearch.init();
         const response = await goSearch.answerQuestion(pergunta);
         await goSearch.close();
 
+        // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
+        // publicada
         res.status(201).json({
+            question: pergunta,
             answer: response.content
         });
     });

@@ -70,31 +70,48 @@ export default class GoSearch {
         const results = await similaritySearchWithFilter(driver, "history_index", {
             k: 5,
             embedding: question_embedding,
-            filter: { userId: "" },
-            rangeFilter: { created_at: { from: "2022-09-16", to: "2022-09-18T23:59:59" } }
+            filter: { oral: "sim" },
+            // rangeFilter: { created_at: { from: "2022-09-16", to: "2022-09-18T23:59:59" } }
         });
 
 
-        const relevantChunks = results.map(result => result.text.replaceAll('text: ', ''));
-        if (relevantChunks.length === 0) return {content: "Sorry, I couldn't find enough information to answer."};
-        
 
-        const context = relevantChunks.join("\n");
+        const relevantChunks = results.map(result => {
+            return result.text + " link: " + result.url;
+        });
+
+        //console.log(results);
+        return {content: "Sorry, I couldn't find enough information to answer."};
+
+
+        if (relevantChunks.length === 0) return {content: "Sorry, I couldn't find enough information to answer."};
+
+        //return {content: "Sorry, I couldn't find enough information to answer."}
+
+        const context = relevantChunks.join("\n\n");
         const prompt = `
             Answer the question concisely and naturally based on the following context:
             Don't use information outside of the provided context.
 
+            Each post is started by: "Postado por:". 
+            So, each post is a different context, dont mix them. 
+            
             Context:
             ${context}
 
-            Question: ${question}
 
-            Provide a details and informative response in portuguese. Use nicks, and dates, to reference your answers:
+            Question: ${question}.
+            
+
+            Provide a details and informative, response in portuguese and always reference links. 
+            Links are locale in final each the post. Important: dont change the link, use original link.
         `;
 
         const response = await this.#model.invoke(prompt);
         return response;
     }
+
+    // , minimum 400 words in response
 
     async close() {
         await this.#neo4jVectorIndex.close();

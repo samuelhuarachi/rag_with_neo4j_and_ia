@@ -4,6 +4,12 @@ const go_search = document.getElementById("go_search")
 document.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const search_form = document.getElementById('search_form');
+    const formData = new FormData(search_form);
+    const search_form_values = Object.fromEntries(formData.entries());
+
+    console.log(search_form_values);
+
     const pergunta = document.getElementById("pergunta")
 
     const f = await fetch(api_route + "/go_search", {
@@ -18,6 +24,39 @@ document.addEventListener("submit", async (e) => {
 
     console.log(answer);
 })
+
+
+document.addEventListener("DOMContentLoaded", evt => {
+    // Cria o bloco da resposta
+    const respostaItem = document.createElement('div');
+    respostaItem.className = 'list-group-item list-group-item-action';
+    respostaItem.innerHTML = `
+      <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">Pergunta:</h6>
+        <small>${new Date().toLocaleTimeString()}</small>
+      </div>
+      <p class="mb-1">TEXTOOO</p>
+      <small class="text-muted">Resposta: (aguardando...)</small>
+    `;
+
+    respostasContainer.prepend(respostaItem);
+
+    // Cria o bloco da resposta
+    const respostaItem2 = document.createElement('div');
+    respostaItem2.className = 'list-group-item list-group-item-action';
+    respostaItem2.innerHTML = `
+      <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">Pergunta:</h6>
+        <small>${new Date().toLocaleTimeString()}</small>
+      </div>
+      <p class="mb-1">TEXTOOO</p>
+      <small class="text-muted">Resposta: (aguardando...)</small>
+    `;
+
+    respostasContainer.prepend(respostaItem2);
+});
+
+
 
 /*
  { answer: 

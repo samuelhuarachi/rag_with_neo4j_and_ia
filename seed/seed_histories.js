@@ -53,7 +53,6 @@ const neo4jVectorStore = await Neo4jVectorStore.initialize(ollamaEmbeddings, con
 const histories = JSON.parse(await readFile("./seed/histories.json"));
 for (const history of histories) {
 
-    console.log("tamanho", history.content.length);
 
     const doc = { pageContent: history.content, metadata: { 
         userId: history.userId,

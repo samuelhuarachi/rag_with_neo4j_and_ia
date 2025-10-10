@@ -4,3 +4,4 @@ import
 documents_extrated
 seed_hidden
 .docker
+seed/histories.json
