@@ -5,6 +5,7 @@ import GoSearch from "../GoSearch.js";
 import mongoose from "mongoose";
 import http from "http";
 import { Server } from "socket.io";
+import IncommingQuestionValidation from "./IncommingQuestionValidation.js";
 
 const app = express();
 const PORT = 3002;
@@ -12,44 +13,40 @@ const PORT = 3002;
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-
 app.use(express.json());
 app.use(cors());
 
-
 const MONGO_URI = process.env.MONGO_URI;
-
 mongoose.connect(MONGO_URI)
-.then(() => {
-    console.log("DB connected");
+    .then(() => {
+        console.log("DB connected");
 
+        app.post("/go_search", async (req, res) => {
+            const incommingQuestionValidation = new IncommingQuestionValidation();
+            const question = incommingQuestionValidation.execute(req.body);
+            if (!question) return res.status(400).json({ errors: "Erro na validacao dos dados" });
 
-    app.post("/go_search", async (req, res) => {
-        const { pergunta } = req.body;
+            console.log(question);
 
-        console.log(req.body);
+            // Posta a mensagem no SQS, para processar uma de cada vez
+            const goSearch = new GoSearch();
+            await goSearch.init();
+            const response = await goSearch.answerQuestion("my question");
+            await goSearch.close();
 
-        // Posta a mensagem no SQS, para processar uma de cada vez
-
-        
-        const goSearch = new GoSearch();
-        await goSearch.init();
-        const response = await goSearch.answerQuestion(pergunta);
-        await goSearch.close();
-
-        // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
-        // publicada
-        res.status(201).json({
-            question: pergunta,
-            answer: response.content
+            // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
+            // publicada
+            res.status(201).json({
+                question: "my question",
+                answer: response.content
+            });
         });
-    });
 
-    server.listen(PORT, () => {
-    console.log(`API rodando em http://localhost:${PORT}`);
-    });
-})
-.catch((err) => console.error("Erro ao conectar no MongoDB:", err));
+        server.listen(PORT, () => {
+            console.log(`API rodando em http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => console.error("Erro ao conectar no MongoDB:", err));
 
 
 // Evento de conexão do Socket.IO
@@ -75,14 +72,14 @@ io.on("connection", (socket) => {
 
 // Função para encerrar a conexão
 const closeMongoConnection = async () => {
-  try {
-    await mongoose.disconnect();
-    console.log("Conexão MongoDB encerrada.");
-    process.exit(0);
-  } catch (err) {
-    console.error("Erro ao encerrar MongoDB:", err);
-    process.exit(1);
-  }
+    try {
+        await mongoose.disconnect();
+        console.log("Conexão MongoDB encerrada.");
+        process.exit(0);
+    } catch (err) {
+        console.error("Erro ao encerrar MongoDB:", err);
+        process.exit(1);
+    }
 };
 
 
@@ -95,6 +92,6 @@ process.on("SIGTERM", closeMongoConnection);
 
 // Captura erros não tratados
 process.on("uncaughtException", async (err) => {
-  console.error("Exceção não tratada:", err);
-  await closeMongoConnection();
+    console.error("Exceção não tratada:", err);
+    await closeMongoConnection();
 });

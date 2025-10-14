@@ -7,17 +7,15 @@ document.addEventListener("submit", async (e) => {
     const search_form = document.getElementById('search_form');
     const formData = new FormData(search_form);
     const search_form_values = Object.fromEntries(formData.entries());
-
-    console.log(search_form_values);
+    const search_form_values_cleaned = Object.fromEntries(Object.entries(search_form_values).filter(([_, value]) => value !== ""))
 
     const pergunta = document.getElementById("pergunta")
-
     const f = await fetch(api_route + "/go_search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({pergunta: pergunta.value})
+        body: JSON.stringify({ ...search_form_values_cleaned })
     });
 
     const answer = await f.json()
