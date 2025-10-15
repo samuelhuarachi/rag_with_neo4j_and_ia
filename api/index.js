@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import http from "http";
 import { Server } from "socket.io";
 import IncommingQuestionValidation from "./IncommingQuestionValidation.js";
+import NormalizeForNeo4j from "./NormalizeForNeo4j.js";
 
 const app = express();
 const PORT = 3002;
@@ -22,24 +23,53 @@ mongoose.connect(MONGO_URI)
         console.log("DB connected");
 
         app.post("/go_search", async (req, res) => {
-            const incommingQuestionValidation = new IncommingQuestionValidation();
-            const question = incommingQuestionValidation.execute(req.body);
-            if (!question) return res.status(400).json({ errors: "Erro na validacao dos dados" });
+            try {
 
-            console.log(question);
+                const incommingQuestionValidation = new IncommingQuestionValidation();
+                const question = incommingQuestionValidation.execute(req.body);
+                if (!question) return res.status(400).json({ errors: "Erro na validacao dos dados" });
 
-            // Posta a mensagem no SQS, para processar uma de cada vez
-            const goSearch = new GoSearch();
-            await goSearch.init();
-            const response = await goSearch.answerQuestion("my question");
-            await goSearch.close();
 
-            // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
-            // publicada
-            res.status(201).json({
-                question: "my question",
-                answer: response.content
-            });
+                // Posta a mensagem no SQS, para processar uma de cada vez
+                // rangeFilter: {
+                //         created_at: {
+                //         from: "2025-01-01",
+                //         to: "2025-12-31",
+                //     },
+                // },
+
+                // normalizar os parametros de question, para o neo4j
+                const normalizeForNeo4j = new NormalizeForNeo4j(question);
+                const params = normalizeForNeo4j.execute();
+
+                // configurando o rangefilter
+                let rangeFilter = {};
+                if (question.dateFinish && question.dateInitial) {
+                    rangeFilter.created_at = {
+                        from: question.dateInitial.toISOString(),
+                        to: question.dateFinish.toISOString(),
+                    };
+                    // { created_at: { from: "2024-11-05", to: "2024-11-06T23:59:59" } }
+                }
+
+                console.log(question.question, params, rangeFilter);
+
+                const goSearch = new GoSearch();
+                await goSearch.init();
+                const response = await goSearch.answerQuestion(question.question, params, rangeFilter);
+                await goSearch.close();
+
+                // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
+                // publicada
+                res.status(201).json({
+                    question: "my question",
+                    answer: response.content
+                });
+            } catch (error) {
+                console.log(error);
+                return res.status(500).json({ errors: "Erro inesperado" });
+            }
+
         });
 
         server.listen(PORT, () => {

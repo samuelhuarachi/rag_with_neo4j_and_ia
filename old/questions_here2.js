@@ -42,7 +42,7 @@ await Promise.all([
     const response = await answerQuestion(question);
 
     console.log("\n💡 Final Answer:\n", response.content);
-    return
+    return;
 }));
 
 
@@ -59,7 +59,7 @@ async function answerQuestion(question) {
     };
     */
     const results = await neo4jVectorIndex.similaritySearchWithScore(question, 10);
-    const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll('text: ', '')).filter(Boolean);
+    const relevantChunks = results.map(result => result[0]?.pageContent?.replaceAll("text: ", "")).filter(Boolean);
 
     if (relevantChunks.length === 0) {
         console.log("⚠️ No relevant context found.");

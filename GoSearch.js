@@ -1,7 +1,7 @@
 import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 // import {similaritySearchWithFilter} from "./similaritySearchWithFilter_ v1.js"
-import { similaritySearchWithFilter } from "./similaritySearchWithFilter.js"
+import { similaritySearchWithFilter } from "./similaritySearchWithFilter.js";
 import neo4j from "neo4j-driver";
 
 import "dotenv/config";
@@ -38,20 +38,20 @@ export default class GoSearch {
             embeddingNodeProperty: "embedding",
         };
 
-        
+
     }
 
     async init() {
         this.#neo4jVectorIndex = await Neo4jVectorStore.initialize(this.#ollamaEmbeddings, this.#config);
     }
 
-   
-    async answerQuestion(question) {
+
+    async answerQuestion(question, params, rangeFilter) {
 
         // const filter = { a: { $eq: 1 } };
         /*
         https://js.langchain.com/docs/integrations/vectorstores/neo4jvector/
-        
+
         const filter = {
             date: {
                 $gte: "2024-01-01",
@@ -68,10 +68,11 @@ export default class GoSearch {
         );
 
         const results = await similaritySearchWithFilter(driver, "history_index", {
-            k: 5,
+            k: 10,
             embedding: question_embedding,
-            filter: { oral: "sim" },
-            // rangeFilter: { created_at: { from: "2022-09-16", to: "2022-09-18T23:59:59" } }
+            filter: { ...params },
+            //rangeFilter: { created_at: { from: "2024-11-05", to: "2024-11-06T23:59:59" } }
+            rangeFilter
         });
 
 
@@ -80,7 +81,8 @@ export default class GoSearch {
             return result.text + " link: " + result.url;
         });
 
-        //console.log(results);
+        console.log(results);
+
         return {content: "Sorry, I couldn't find enough information to answer."};
 
 
@@ -93,17 +95,17 @@ export default class GoSearch {
             Answer the question concisely and naturally based on the following context:
             Don't use information outside of the provided context.
 
-            Each post is started by: "Postado por:". 
-            So, each post is a different context, dont mix them. 
-            
+            Each post is started by: "Postado por:".
+            So, each post is a different context, dont mix them.
+
             Context:
             ${context}
 
 
             Question: ${question}.
-            
 
-            Provide a details and informative, response in portuguese and always reference links. 
+
+            Provide a details and informative, response in portuguese and always reference links.
             Links are locale in final each the post. Important: dont change the link, use original link.
         `;
 
