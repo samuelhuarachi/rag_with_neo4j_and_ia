@@ -5,6 +5,7 @@ import { similaritySearchWithFilter } from "./similaritySearchWithFilter.js";
 import neo4j from "neo4j-driver";
 
 import "dotenv/config";
+import { searchRandomWithFilter } from "./searchRandomWithFilter.js";
 
 export default class GoSearch {
 
@@ -45,21 +46,7 @@ export default class GoSearch {
         this.#neo4jVectorIndex = await Neo4jVectorStore.initialize(this.#ollamaEmbeddings, this.#config);
     }
 
-
     async answerQuestion(question, params, rangeFilter) {
-
-        // const filter = { a: { $eq: 1 } };
-        /*
-        https://js.langchain.com/docs/integrations/vectorstores/neo4jvector/
-
-        const filter = {
-            date: {
-                $gte: "2024-01-01",
-                $lte: "2024-12-31"
-            }
-        };
-        */
-
         const question_embedding = await this.#ollamaEmbeddings.embedQuery(question);
 
         const driver = neo4j.driver(
@@ -71,17 +58,18 @@ export default class GoSearch {
             k: 10,
             embedding: question_embedding,
             filter: { ...params },
-            //rangeFilter: { created_at: { from: "2024-11-05", to: "2024-11-06T23:59:59" } }
             rangeFilter
         });
 
 
+        return results;
+
+        // daqui para baixo é processamento de LLM. Acho que nao vou usar isso
 
         const relevantChunks = results.map(result => {
             return result.text + " link: " + result.url;
         });
 
-        console.log(results);
 
         return {content: "Sorry, I couldn't find enough information to answer."};
 
@@ -113,10 +101,25 @@ export default class GoSearch {
         return response;
     }
 
+    async searchRandom(params, rangeFilter) {
+        const driver = neo4j.driver(
+            "neo4j://localhost:7687",
+            neo4j.auth.basic(process.env.NEO4J_USER, process.env.NEO4J_PASSWORD)
+        );
+
+        const results = await searchRandomWithFilter(driver, "History", {
+            filter: { ...params },
+            rangeFilter
+        });
+
+        return results;
+    }
+
     // , minimum 400 words in response
 
     async close() {
         await this.#neo4jVectorIndex.close();
+
 
     }
 }

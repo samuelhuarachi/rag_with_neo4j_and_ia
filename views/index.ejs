@@ -2,8 +2,24 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
   <title>Escort Girls - Recomendations in Brazil</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .answer pre {
+            white-space: pre-wrap;   /* quebra de linha automática */
+            word-wrap: break-word;   /* quebra palavras longas */
+            overflow-x: hidden;      /* remove scroll horizontal */
+        }
+
+        .answer {
+            border: 1px solid #e2e2e2;
+            padding: 25px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -68,7 +84,7 @@
               <input type="date" id="dateFinish" name="dateFinish" class="form-control">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="oral" class="form-label">Oral sem camisinha</label>
               <select id="oral" name="oral" class="form-select">
                 <option value="">Selecione</option>
@@ -76,7 +92,7 @@
                 <option value="no">Não</option>
               </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="anal" class="form-label">Faz anal</label>
               <select id="anal" name="anal" class="form-select">
                 <option value="">Selecione</option>
@@ -84,7 +100,7 @@
                 <option value="no">Não</option>
               </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="kiss" class="form-label">Beija na boca</label>
               <select id="kiss" name="kiss" class="form-select">
                 <option value="">Selecione</option>
@@ -92,7 +108,7 @@
                 <option value="no">Não</option>
               </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="grade" class="form-label">Nota acima de</label>
               <select id="grade" name="grade" class="form-select">
                 <option value="">Selecione</option>
@@ -108,12 +124,16 @@
                 <option value="10">10</option>
               </select>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-2">
+              <label for="tds" class="form-label">Td(s) acima de</label>
+              <input type="text" id="tds" name="tds" class="form-control">
+            </div>
+            <!-- <div class="col-md-12">
               <input class="form-check-input" type="checkbox" name="use_ia" id="use_ia">
               <label class="form-check-label" for="use_ia">
                 Utilizar IA (esse processo pode demorar até 2min)
               </label>
-            </div>
+            </div> -->
           </div>
 
 
@@ -131,9 +151,7 @@
           </div>
         </form>
 
-        <div id="respostasContainer" class="list-group">
-
-        </div>
+        <div id="respostasContainer"></div>
       </div>
     </div>
   </div>
@@ -157,5 +175,7 @@
     });
 
   </script>
+
+
 </body>
 </html>

@@ -16,7 +16,8 @@ export default class IncommingQuestionValidation {
         oral: z.enum(["yes", "no"]).optional(),
         anal: z.enum(["yes", "no"]).optional(),
         kiss: z.enum(["yes", "no"]).optional(),
-        grade: z.number().min(0).max(10).optional()
+        grade: z.number().min(0).max(10).optional(),
+        tds: z.number().min(0).optional()
     });
 
     constructor() {}

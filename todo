@@ -1,15 +1,23 @@
+A fazer
+- importar os dados, e ver como faz o dump e restore no neo4j
+- mehorar visuzliacao das respostas
+
+
+Lista
 - remover codigo desnecessario
 - ver preço de um servidor com gpu, no começo provavelmente vou usar aqueles servidores da europa
-- importar os dados, e ver como faz o dump e restore no neo4j
 - validar entrada dos dados, e processar o resultado -> ok
 - classificar por nota (grade) -> ok
-- colocar o filtro de tds dos usuarios (apenas usuario acima de x tds)
+- colocar o filtro de tds dos usuarios (apenas usuario acima de x tds) -> ok
 - se a opcao de nao usar IA estiver desativada, fazer uma pesquisa
-simples (pensei em gerar um dados random, um shake no resultado, para sempre ir variando, sem usar similaridade)
-- enviar as requisicoes para uma fila sqs
-- processar a fila, e exibir no frontend em tempo real (socke io)
+simples (pensei em gerar um dados random, um shake no resultado, para sempre ir variando, sem usar similaridade) -> ok
+- enviar as requisicoes para uma fila sqs -> acho quen nao vai precisar
+- processar a fila, e exibir no frontend em tempo real (socke io) -> acho que nao vai precisar
 - usar angular no frontend
-- eu acho que é só
+- preencher os topicos
+- melhorar resultados por busca por similaridade
+- deixar em ingles tambem (pt-br e ingles, ou qualquer lingua)
+
 
 
 

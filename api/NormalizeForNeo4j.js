@@ -27,6 +27,12 @@ export default class NormalizeForNeo4j {
                     if (key === "grade") {
                         return [key, Number(value)]; // garante que grade é número
                     }
+                    if (key === "tds") {
+                        return ["total_tds", Number(value)];
+                    }
+                    if (key === "nick") {
+                        return ["userId", value];
+                    }
                     return [key, value];
                 })
         );

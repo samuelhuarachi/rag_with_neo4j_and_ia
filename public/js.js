@@ -10,8 +10,8 @@ document.addEventListener("submit", async (e) => {
     const search_form_values_cleaned = Object.fromEntries(Object.entries(search_form_values)
         .filter(([_, value]) => value !== "")
         .map(([key, value]) => {
-            if (key === "grade") {
-                return [key, Number(value)]; // converte grade para número
+            if (key === "grade" || key === "tds") {
+                return [key, Number(value)];
             }
             if (key === "dateInitial" || key === "dateFinish") {
                 return [key, new Date(value)]; // converte para Date
@@ -20,7 +20,6 @@ document.addEventListener("submit", async (e) => {
         }));
 
 
-    console.log(search_form_values_cleaned);
 
     const f = await fetch(api_route + "/go_search", {
         method: "POST",
@@ -30,51 +29,23 @@ document.addEventListener("submit", async (e) => {
         body: JSON.stringify({ ...search_form_values_cleaned })
     });
 
-    const answer = await f.json();
+    const response = await f.json();
 
-    console.log(answer);
+    answer(response);
 });
 
-
-document.addEventListener("DOMContentLoaded", evt => {
-    // Cria o bloco da resposta
+function answer(data) {
     const respostaItem = document.createElement("div");
-    respostaItem.className = "list-group-item list-group-item-action";
+    respostaItem.className = "answer";
     respostaItem.innerHTML = `
       <div class="d-flex w-100 justify-content-between">
-        <h6 class="mb-1">Pergunta:</h6>
+        <h6 class="mb-1">Resultado da pesquisa</h6>
         <small>${new Date().toLocaleTimeString()}</small>
       </div>
-      <p class="mb-1">TEXTOOO</p>
-      <small class="text-muted">Resposta: (aguardando...)</small>
+      <pre class="mb-1">${JSON.stringify(data.answer, undefined, 2)}</pre>
+
     `;
 
     respostasContainer.prepend(respostaItem);
-
-    // Cria o bloco da resposta
-    const respostaItem2 = document.createElement("div");
-    respostaItem2.className = "list-group-item list-group-item-action";
-    respostaItem2.innerHTML = `
-      <div class="d-flex w-100 justify-content-between">
-        <h6 class="mb-1">Pergunta:</h6>
-        <small>${new Date().toLocaleTimeString()}</small>
-      </div>
-      <p class="mb-1">TEXTOOO</p>
-      <small class="text-muted">Resposta: (aguardando...)</small>
-    `;
-
-    respostasContainer.prepend(respostaItem2);
-});
-
-
-
-/*
- { answer:
-    'Sabe-se que uma mulher chamada Amanda atende na casa do Alfredo, localizada na Rua Guaiçara.
-    Ela foi mencionada em um Test Drive (TD) publicado por "felipe_1999" no dia 12 de setembro de 2021, onde o
-    usuário descreveu a experiência com Amanda como positiva: ela ofereceu toalha limpa para banho, estava sempre cheirosa e limpinha,
-    e proporcionou um bom atendimento (incluindo boquete sem capa e posições sem reclamações).
-    O contato com Amanda foi classificado com nota 8.' }
-*/
-
+}
 

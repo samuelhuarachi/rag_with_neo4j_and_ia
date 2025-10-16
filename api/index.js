@@ -24,19 +24,9 @@ mongoose.connect(MONGO_URI)
 
         app.post("/go_search", async (req, res) => {
             try {
-
                 const incommingQuestionValidation = new IncommingQuestionValidation();
                 const question = incommingQuestionValidation.execute(req.body);
                 if (!question) return res.status(400).json({ errors: "Erro na validacao dos dados" });
-
-
-                // Posta a mensagem no SQS, para processar uma de cada vez
-                // rangeFilter: {
-                //         created_at: {
-                //         from: "2025-01-01",
-                //         to: "2025-12-31",
-                //     },
-                // },
 
                 // normalizar os parametros de question, para o neo4j
                 const normalizeForNeo4j = new NormalizeForNeo4j(question);
@@ -52,18 +42,26 @@ mongoose.connect(MONGO_URI)
                     // { created_at: { from: "2024-11-05", to: "2024-11-06T23:59:59" } }
                 }
 
-                console.log(question.question, params, rangeFilter);
+
+                console.log("question.question >> ", question.question);
+
 
                 const goSearch = new GoSearch();
                 await goSearch.init();
-                const response = await goSearch.answerQuestion(question.question, params, rangeFilter);
+
+                const response = (question.question) ?
+                    await goSearch.answerQuestion(question.question, params, rangeFilter) :
+                    await goSearch.searchRandom(params, rangeFilter);
+
                 await goSearch.close();
+
+
+                response.forEach(obj => delete obj.embedding);
 
                 // aqui ele pode retornar um 200 falando que esta tudo ok, e que logo a  resposta sera
                 // publicada
                 res.status(201).json({
-                    question: "my question",
-                    answer: response.content
+                    answer: response
                 });
             } catch (error) {
                 console.log(error);

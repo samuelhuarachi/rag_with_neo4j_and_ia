@@ -10,26 +10,11 @@ export async function similaritySearchWithFilter(
         const conditions = [];
         const params = { k, embedding };
 
-        // filtros de igualdade
-        // if (filter) {
-        //     conditions.push(...Object.keys(filter).map(key => `node.${key} = $${key}`));
-        // }
-
-
-        // --- filtros de igualdade ---
-        // for (const key of Object.keys(filter)) {
-        //     if (key === "grade") {
-        //         // tratamento especial: grade >= valor
-        //         conditions.push("node.grade >= $grade");
-        //         params.grade = parseInt(filter.grade, 10);
-        //     } else {
-        //         // filtros normais
-        //         conditions.push(`node.${key} = $${key}`);
-        //         params[key] = filter[key];
-        //     }
-        // }
         for (const key of Object.keys(filter)) {
-            if (key === "grade") {
+            if (key === "total_tds") {
+                conditions.push("node.total_tds >= $total_tds");
+                params.total_tds = filter.total_tds;
+            } else if (key === "grade") {
                 // tratamento especial: grade >= valor
                 conditions.push("node.grade >= $grade");
                 params.grade = filter.grade;
@@ -39,15 +24,6 @@ export async function similaritySearchWithFilter(
                 params[key] = filter[key];
             }
         }
-
-        // filtros de intervalo
-        // if (rangeFilter) {
-        //     for (const key of Object.keys(rangeFilter)) {
-        //         const range = rangeFilter[key];
-        //         if (range.from) conditions.push(`node.${key} >= $${key}_from`);
-        //         if (range.to) conditions.push(`node.${key} <= $${key}_to`);
-        //     }
-        // }
 
         // --- filtros de intervalo ---
         if (rangeFilter) {
@@ -73,15 +49,6 @@ export async function similaritySearchWithFilter(
       RETURN node {.*, score} AS result
       ORDER BY score DESC
     `;
-
-        // const params = { k, embedding, ...filter };
-        // if (rangeFilter) {
-        //     for (const key of Object.keys(rangeFilter)) {
-        //         const range = rangeFilter[key];
-        //         if (range.from) params[`${key}_from`] = range.from;
-        //         if (range.to) params[`${key}_to`] = range.to;
-        //     }
-        // }
 
         const result = await session.run(query, params);
         return result.records.map(r => r.get("result"));
