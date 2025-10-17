@@ -22,6 +22,7 @@ services:
       - ./neo4j/logs:/logs
       - ./neo4j/plugins:/plugins
       - ./import:/var/lib/neo4j/import
+      - ./neo4j/backups:/root/backups
     ports:
       - "7474:7474"  # Neo4j Browser
       - "7687:7687"  # Bolt Protocol (for queries)

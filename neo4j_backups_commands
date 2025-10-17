@@ -1,0 +1,15 @@
+
+
+#  Pipeline de backup e restauração
+
+1 - 'acessar o container e criar a pasta: /root/backups (acho que ja coloquei para criar essa pasta no docker compose yaml - volumes)'
+2 - docker exec -it d40fe9168478 neo4j stop
+3 - docker exec -it 41d18a023863 neo4j-admin database dump neo4j --to-path=/root/backups
+4 - docker cp 41d18a023863:/root/backups/neo4j.dump .
+5 - docker exec -it d40fe9168478 neo4j stop
+6 - docker exec -it d40fe9168478 neo4j-admin database load neo4j --from-path=/root/backups/ --overwrite-destination=true
+7 - 'fazer o comando docker compose down, e depois up, senao parece que o bd nao levanta.'
+
+
+adicionais:
+neo4j-admin database list (listar banco de dados existentes)
